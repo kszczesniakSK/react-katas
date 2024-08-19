@@ -1,32 +1,45 @@
 import clsx from "clsx";
-import { useUserContext } from "../context/useUserContext";
+import { useCallback, useMemo } from "react";
 
-const UserList: React.FC = () => {
-  const { selectedUser, setSelectedUser } = useUserContext();
-  const { username, setUsername, logoutUser } = useContext(UserContext);
-  const users = ["John Doe", "Jane Smith", "Bob Johnson"];
+type UserListProps = {
+    users: string[];
+    onUserSelect: (user: string) => void;
+    selectedUser: string | null;
+  };
 
-  return (
-    <div>
-      <h2>User List</h2>
+const UserList: React.FC<UserListProps> = ({ users, onUserSelect, selectedUser }) => {
+    // Memoize the filtered list so it's recalculated only when `users` changes
+    const filteredUsers = useMemo(() => {
+      return users.filter((user) => user.includes('John'));
+    }, [users]);
+  
+    // Memoize the click handler to avoid re-creation on every render
+    const handleUserClick = useCallback(
+      (user: string) => {
+        onUserSelect(user);
+      },
+      [onUserSelect]
+    );
+  
+    return (
       <ul>
-        {users.map((user, index) => (
-          <li
-            key={index}
-            onClick={() => setSelectedUser(user)}
-            className={clsx({
-              "selected-user": selectedUser === user,
-            })}
-          >
-            {user}
-          </li>
-        ))}
+        {filteredUsers.length > 0 ? (
+          filteredUsers.map((user, index) => (
+            <li
+              key={`${user}-${index}`} // Use a unique key
+              onClick={() => handleUserClick(user)}
+              className={clsx({
+                'selected-user': selectedUser === user,
+              })}
+            >
+              {user}
+            </li>
+          ))
+        ) : (
+          <p>No users found.</p>
+        )}
       </ul>
+    );
+  };
 
-      {/* Display selected user from context */}
-      {selectedUser && <p>Selected User: {selectedUser}</p>}
-    </div>
-  );
-};
-
-export default UserList;
+  export default UserList

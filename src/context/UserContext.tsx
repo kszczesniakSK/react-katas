@@ -1,43 +1,44 @@
 import {
-    createContext,
-    type PropsWithChildren,
-    useCallback,
-    useMemo,
-    useState
-  } from "react";
-  
-  // Define the structure for the UserContext
-  type UserContextType = {
-    username: string | null;
-    setUsername?: (name: string | null) => void;
-    logoutUser?: () => void;
-  };
-  
-  // Default context value
-  const defaultContextValue: UserContextType = {
-    username: null,
-  };
-  
-  // Create the UserContext with default values
-  export const UserContext = createContext<UserContextType>(defaultContextValue);
-  
-  // Create the UserProvider component to provide the context to child components
-  export const UserProvider = ({ children }: PropsWithChildren) => {
-    // useState to manage username
-    const [username, setUsername] = useState<string | null>(null);
-  
-    // A function to simulate user logout
-    const logoutUser = useCallback(() => {
-      console.log("User logged out");
-      setUsername(null); // Reset the username
-    }, [setUsername]);
-  
-    // Memoize the context value
-    const value = useMemo(
-      () => ({ username, setUsername, logoutUser }),
-      [username, setUsername, logoutUser]
-    );
-  
-    // Provide the context value to child components
-    return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
-  };
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
+// User Context Setup
+type UserContextType = {
+  userToken: string | null;
+  setUserToken?: (token: string | null) => void;
+  logoutUser?: () => void;
+};
+
+const USER_TOKEN_STORAGE_KEY = "user_token";
+const defaultContextValue: UserContextType = { userToken: null };
+export const UserContext = createContext<UserContextType>(defaultContextValue);
+
+export const UserProvider = ({ children }: PropsWithChildren) => {
+  const [userToken, setUserToken] = useState<string | null>(() =>
+    localStorage.getItem(USER_TOKEN_STORAGE_KEY)
+  );
+
+  const logoutUser = useCallback(() => {
+    setUserToken(null);
+  }, []);
+
+  useEffect(() => {
+    if (userToken) {
+      localStorage.setItem(USER_TOKEN_STORAGE_KEY, userToken);
+    } else {
+      localStorage.removeItem(USER_TOKEN_STORAGE_KEY);
+    }
+  }, [userToken]);
+
+  const value = useMemo(
+    () => ({ logoutUser, setUserToken, userToken }),
+    [logoutUser, setUserToken, userToken]
+  );
+
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
+};
