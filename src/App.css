@@ -5,6 +5,12 @@
   text-align: center;
 }
 
+.rightCorner {
+  position:fixed;
+  top:5px;
+  right:5px
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;

@@ -43,12 +43,13 @@ const PostForm: React.FC = () => {
     mutationFn: (updatedPost: Omit<Post, "id">) =>
       updatePost(postId!, updatedPost),
     onSuccess: () => {
-
       queryClient.invalidateQueries({ queryKey: ["post", postId], });
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       setPostId(null); 
     },
   });
+
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

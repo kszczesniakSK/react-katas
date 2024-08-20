@@ -12,6 +12,9 @@ import clsx from "clsx";
 import UserList from "../components/UserList";
 import { useUserContext } from "../context/useUserContext";
 import { useNavigate } from "react-router-dom";
+import { fetchPosts } from "./ReactQueryPage";
+import { useQuery } from "@tanstack/react-query";
+import { Post } from "../types";
 
 // Reducer Example
 type StateType = { count: number };
@@ -34,7 +37,7 @@ const HomePage: React.FC = () => {
   // useState with optimized initialValue
   const [showList, setShowList] = useState<boolean>(() => false);
   const [inputValue, setInputValue] = useState<string>("");
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [selectedUser] = useState<string | null>(null);
   const [complexValue, setComplexValue] = useState<number>(() => {
     // Simulating a complex calculation
     return 100 * 2;
